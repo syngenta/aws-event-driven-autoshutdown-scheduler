@@ -4,8 +4,8 @@
 This open-source project provides an automated shutdown and startup solution for AWS EC2,AutoScaling groups and RDS resources. It's designed to help organizations reduce costs and minimize their carbon footprint by automatically managing resource usage during off-hours and weekends.
 
 ## Features
-- Event-driven architecture for real-time schedule updates.
-- Centralized approach for larger org and business units.
+- Event-driven architecture for real-time schedule updates based on resource tags. 
+- Centralized approach for larger org and business units while keeping implementation cost low. 
 - Support for EC2, RDS, DocumentDB, and AutoScaling Groups
 - Customizable shutdown schedules using resource tags
 - Easy integration with existing AWS environments
