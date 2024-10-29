@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for EventBridge Rule and IAM Role
+
+Parameters:
+  EventBusArn:
+    Type: String
+    Description: ARN of the target event bus
+    Default: arn:aws:events:eu-central-1:188542856001:event-bus/autoshutdown
+  
+  EventPattern:   #sample-event-pattern.json
+    Type: String
+    Description: JSON string representing the event pattern
+    
+Resources:
+  autoShutdownEventBridgeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: autoShutDownEventBridgePutEventsPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ActionsForResource
+                Effect: Allow
+                Action:
+                  - events:PutEvents
+                Resource:
+                  - !Ref EventBusArn
+      Tags:
+        - Key: owner
+          Value: global-devops
+        - Key: slack-support-channel
+          Value: devops-help
+        - Key: managedby
+          Value: cloudformation
+        - Key: project
+          Value: autoshutdown
+
+  autoShutdownEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: autoShutDown-devops-managed
+      EventPattern: !Ref EventPattern
+      State: ENABLED
+      EventBusName: default
+      Targets:
+        - Id: Id2a2b1791-546e-4ed2-8ffa-4aac6e23abe3
+          Arn: !Ref EventBusArn
+          RoleArn: !GetAtt autoShutdownEventBridgeRole.Arn
+     
+
+Outputs:
+  RoleArn:
+    Description: ARN of the created IAM Role
+    Value: !GetAtt autoShutdownEventBridgeRole.Arn
+  RuleName:
+    Description: Name of the created EventBridge Rule
+    Value: !Ref autoShutdownEventRule

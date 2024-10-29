@@ -1,0 +1,31 @@
+{
+    "source": ["aws.ec2", "aws.rds", "aws.autoscaling"],
+    "detail-type": ["AWS API Call via CloudTrail"],
+    "detail": {
+      "eventSource": ["ec2.amazonaws.com", "rds.amazonaws.com", "autoscaling.amazonaws.com"],
+      "eventName": ["CreateTags", "DeleteTags", "AddTagsToResource", "RemoveTagsFromResource", "CreateOrUpdateTags"],
+      "requestParameters": {
+        "$or": [{
+          "tagSet": {
+            "items": {
+              "key": [{
+                "prefix": "weekendautoshutdown"
+              }, {
+                "prefix": "dailyautoshutdown"
+              }]
+            }
+          }
+        }, {
+          "tags": {
+            "key": [{
+              "prefix": "weekendautoshutdown"
+            }, {
+              "prefix": "dailyautoshutdown"
+            }]
+          }
+        }, {
+          "tagKeys": ["weekendautoshutdown", "dailyautoshutdown"]
+        }]
+      }
+    }
+  }
