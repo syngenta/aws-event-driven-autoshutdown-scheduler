@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for EventBridge Event bus
+Resources:
+  Rulec7a004e7:
+    Type: AWS::Events::Rule
+    DependsOn:
+      - EventBusdb89f06f
+    Properties:
+      Name: autoshutdown-catch-events
+      EventPattern: '{"detail-type":["AWS API Call via CloudTrail"]}'
+      State: ENABLED
+      Description: autoshutdown-catch-events
+      EventBusName: autoshutdown
+      Targets:
+        - Id: Idf3175c3b-8a67-45ff-8a8b-b1f28248
+          Arn:
+            Fn::Sub: >-
+              arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:autoshutdown-transform-event
+          DeadLetterConfig:
+            Arn:
+              Fn::Sub: >-
+                arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:autoshutdown-dlq
+          RetryPolicy:
+            MaximumRetryAttempts: 5
+  EventBusdb89f06f:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: autoshutdown
+      ##CHNAGE THIS POLICY AS NEEDED
+      Policy: >-
+        {"Version":"2012-10-17","Statement":[{"Sid":"AllowAllAccountsFromOrganizationToPutEvents","Effect":"Allow","Principal":"*","Action":"events:PutEvents","Resource":"arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/autoshutdown","Condition":{"StringEquals":{"aws:PrincipalOrgID":"{"aws:PrincipalOrgID":"}}}}]}
+      Description: For autoshutdown
+Parameters: {}
